@@ -179,6 +179,20 @@ def analyze(request: AnalyzeRequest):
         except Exception as exc:
             raise HTTPException(500, f"Email model could not be loaded or run: {exc}")
 
+    if input_type == "screenshot":
+        if not request.text.strip():
+            raise HTTPException(400, "No readable text was found in the screenshot.")
+        try:
+            started = time.time()
+            result = _load_sms().predict(request.text)
+            print(f"[Trust Engine] Screenshot OCR inference completed in {time.time()-started:.1f}s", flush=True)
+            response = _build_result(result["prediction"], result["probabilities"], "screenshot", request.text)
+            response["technical"]["ocr_text"] = request.text
+            response["note"] = "Screenshot text was extracted with browser OCR and analyzed by the trained SMS model."
+            return response
+        except Exception as exc:
+            raise HTTPException(500, f"Screenshot text analysis could not run: {exc}")
+
     if input_type == "url":
         raise HTTPException(501, "The URL model is not connected yet.")
 
