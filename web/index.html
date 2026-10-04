@@ -28,13 +28,13 @@
   <div id="text-input-area" class="input-area"><div class="label-row"><label id="input-label" for="content">Message</label><span id="counter">0 characters</span></div><textarea id="content" placeholder="Paste the message you want to check here..."></textarea></div>
   <div id="url-input-area" class="input-area hidden"><label for="url">Website link</label><input id="url" type="url" placeholder="https://example.com"></div>
   <div id="image-input-area" class="input-area hidden">
-    <label for="image">Screenshot</label>
+    <label>Screenshot</label>
     <label class="dropzone" id="dropzone" for="image">
       <div class="drop-icon">▣</div>
       <strong id="file-title">Choose a screenshot</strong>
       <span id="file-hint">Click here or drop a PNG / JPG image</span>
-      <input id="image" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
     </label>
+    <input id="image" class="file-input" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
     <div id="file-status" class="file-status"></div>
   </div>
   <div class="input-tip" id="helper"><span>i</span> For your safety, never enter an OTP, password, PIN, or other secret information.</div>
