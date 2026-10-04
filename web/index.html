@@ -5,45 +5,49 @@
 <title>AI Digital Trust Engine</title><link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+<div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
 <div class="app-shell">
 <header class="topbar">
-  <div class="brand"><div class="brand-mark">🛡</div><div><div class="brand-name">AI Digital Trust Engine</div><div class="brand-tagline">Understand the risk before you act</div></div></div>
-  <div class="top-actions"><div class="flow-pill">DETECT <b>→</b> EXPLAIN <b>→</b> GUIDE</div><div class="secure-pill"><span></span> Safety assistant</div></div>
+  <div class="brand"><div class="brand-mark"><span>♢</span></div><div><div class="brand-name">AI Digital Trust Engine</div><div class="brand-tagline">Understand the risk before you act</div></div></div>
+  <div class="top-actions"><div class="flow-pill"><span>DETECT</span><b>→</b><span>EXPLAIN</span><b>→</b><span>GUIDE</span></div><div class="secure-pill"><span></span> Safety assistant</div></div>
 </header>
 <main class="dashboard">
 <section class="welcome">
-  <div><div class="eyebrow">DIGITAL SAFETY CHECK</div><h1>Understand the risk <span>before you act.</span></h1><p>Check a message, email, link, or screenshot in one simple view.</p></div>
-  <div class="privacy-note">🔒 Never enter OTPs, passwords, PINs or card details.</div>
+  <div class="hero-copy"><div class="eyebrow">AI-POWERED DIGITAL SAFETY</div><h1>Check before you <span>click.</span></h1><p>Understand suspicious messages, emails, links and screenshots before taking action.</p></div>
+  <div class="privacy-note"><span>🔒</span><div><b>Your privacy matters</b><small>Never enter OTPs, passwords or card details.</small></div></div>
 </section>
 <section class="panels">
 <div class="panel input-panel">
-  <div class="panel-title"><div><h2>What would you like to check?</h2><p>Choose one and provide the content.</p></div><div class="step-number">01</div></div>
-  <div class="input-tabs" role="tablist">
+  <div class="panel-title"><div><div class="section-kicker">INPUT</div><h2>What would you like to check?</h2><p>Choose an item and let the Trust Engine assess it.</p></div><div class="step-number">01</div></div>
+  <div class="input-tabs">
     <button class="tab active" data-type="sms"><span class="tab-icon">💬</span><span>Message</span></button>
     <button class="tab" data-type="email"><span class="tab-icon">✉</span><span>Email</span></button>
     <button class="tab" data-type="url"><span class="tab-icon">🔗</span><span>Link</span></button>
-    <button class="tab" data-type="screenshot"><span class="tab-icon">📷</span><span>Screenshot</span></button>
+    <button class="tab" data-type="screenshot"><span class="tab-icon">▣</span><span>Screenshot</span></button>
   </div>
   <div id="text-input-area" class="input-area"><div class="label-row"><label id="input-label" for="content">Message</label><span id="counter">0 characters</span></div><textarea id="content" placeholder="Paste the message you want to check here..."></textarea></div>
   <div id="url-input-area" class="input-area hidden"><label for="url">Website link</label><input id="url" type="url" placeholder="https://example.com"></div>
-  <div id="image-input-area" class="input-area hidden"><label>Screenshot</label><div class="dropzone"><div class="drop-icon">📷</div><strong>Drop a screenshot here</strong><span>or click to choose PNG / JPG</span><input id="image" type="file" accept="image/png,image/jpeg"></div></div>
-  <div class="input-tip" id="helper">For your safety, never enter an OTP, password, PIN, or other secret information.</div>
-  <div class="input-actions"><button id="clear-btn" class="secondary-btn">Clear</button><button id="check-btn" class="primary-btn"><span>🔍</span> Check Safety</button></div>
+  <div id="image-input-area" class="input-area hidden"><label>Screenshot</label><div class="dropzone"><div class="drop-icon">▣</div><strong>Drop a screenshot here</strong><span>or click to choose PNG / JPG</span><input id="image" type="file" accept="image/png,image/jpeg"></div></div>
+  <div class="input-tip" id="helper"><span>i</span> For your safety, never enter an OTP, password, PIN, or other secret information.</div>
+  <div class="input-actions"><button id="clear-btn" class="secondary-btn">Clear</button><button id="check-btn" class="primary-btn"><span>✦</span> Check Safety</button></div>
   <div id="status" class="status"></div>
 </div>
 <section id="result" class="panel result-panel">
-  <div class="panel-title"><div><h2>Your safety result</h2><p id="result-subtitle">Your analysis will appear here.</p></div><div class="step-number">02</div></div>
-  <div id="empty-result" class="empty-result"><div class="empty-shield">🛡</div><h3>Ready to check</h3><p>Enter something on the left and select <strong>Check Safety</strong>.</p></div>
+  <div class="panel-title"><div><div class="section-kicker">ASSESSMENT</div><h2>Your safety result</h2><p id="result-subtitle">AI analysis will appear here.</p></div><div class="step-number">02</div></div>
+  <div id="empty-result" class="empty-result">
+    <div class="scan-orbit"><div class="scan-core">✦</div><span class="orbit-dot dot-a"></span><span class="orbit-dot dot-b"></span></div>
+    <div class="ready-label">TRUST ENGINE READY</div><h3>Nothing checked yet</h3><p>Enter something on the left and we'll turn the model's prediction into a simple safety decision.</p>
+  </div>
   <div id="analysis-result" class="hidden">
     <div class="result-banner"><div class="result-heading"><div id="result-icon" class="result-icon">⚠</div><div><div class="small-label">ASSESSMENT</div><h3 id="result-title">This message does not look safe.</h3></div></div><div id="risk-badge" class="risk-badge high">HIGH RISK</div></div>
-    <div class="score-row"><div class="score-card"><div class="score-number"><strong id="score">99.38</strong><span>/100</span></div><div class="score-label">FRAUD SCORE</div><div class="score-track"><div id="score-bar"></div></div></div><div class="summary-card"><h3 id="score-summary">This message is highly likely to be fraudulent.</h3><p id="result-note">The score is based on the model prediction and supporting risk signals.</p></div></div>
-    <div class="explain-grid"><div class="explain-card why-card"><div class="card-heading"><span>⚠</span><h3>Why is it risky?</h3></div><ul id="signals"></ul></div><div class="explain-card action-card"><div class="card-heading"><span>✓</span><h3>What should you do?</h3></div><ul id="actions"></ul></div></div>
+    <div class="score-row"><div class="score-card"><div class="score-top"><div><div class="score-number"><strong id="score">99.38</strong><span>/100</span></div><div class="score-label">FRAUD SCORE</div></div><div class="score-medallion">RISK</div></div><div class="score-track"><div id="score-bar"></div></div></div><div class="summary-card"><div class="summary-label">WHAT THE MODEL SAYS</div><h3 id="score-summary">This message is highly likely to be fraudulent.</h3><p id="result-note">The score is based on the model prediction and supporting risk signals.</p></div></div>
+    <div class="explain-grid"><div class="explain-card why-card"><div class="card-heading"><span>⚠</span><div><div class="card-kicker">EXPLAIN</div><h3>Why is it risky?</h3></div></div><ul id="signals"></ul></div><div class="explain-card action-card"><div class="card-heading"><span>✓</span><div><div class="card-kicker">GUIDE</div><h3>What should you do?</h3></div></div><ul id="actions"></ul></div></div>
     <details class="technical"><summary>Technical details</summary><pre id="technical-content"></pre></details>
   </div>
 </section>
 </section>
 </main>
-<footer>AI Digital Trust Engine · M.Tech Case Study</footer>
+<footer><span>AI Digital Trust Engine</span><b>•</b> M.Tech Case Study <b>•</b> DETECT · EXPLAIN · GUIDE</footer>
 </div>
 <script src="/static/app.js"></script>
 </body></html>
