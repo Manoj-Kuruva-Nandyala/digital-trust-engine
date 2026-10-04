@@ -111,10 +111,37 @@ document.getElementById("check-btn").addEventListener("click", async () => {
       if (!file.type.startsWith("image/")) throw new Error("Please select a PNG or JPG image.");
       if (file.size > 10 * 1024 * 1024) throw new Error("Screenshot is too large. Please use an image below 10 MB.");
 
-      const form = new FormData();
-      form.append("image", file, file.name);
+      // Use browser-side OCR so the screenshot flow does not depend on
+      // Tesseract being installed on the server/PC.
+      if (typeof Tesseract === "undefined") {
+        throw new Error("Screenshot OCR is not available. Please refresh the page and try again.");
+      }
 
-      response = await fetch("/api/analyze/screenshot", { method: "POST", body: form });
+      status.textContent = "Reading screenshot...";
+      const ocr = await Tesseract.recognize(file, "eng", {
+        logger: (message) => {
+          if (message && message.status === "recognizing text" && typeof message.progress === "number") {
+            status.textContent = "Reading screenshot... " + Math.round(message.progress * 100) + "%";
+          }
+        }
+      });
+
+      const extractedText = (ocr.data.text || "").trim();
+      if (!extractedText) {
+        throw new Error("No readable text was found in the screenshot. Please use a clearer image.");
+      }
+
+      status.textContent = "Checking screenshot text...";
+
+      response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "screenshot",
+          text: extractedText,
+          url: ""
+        })
+      });
     } else {
       const input = { type: state.type, text: content.value, url: url.value };
 
