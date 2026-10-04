@@ -190,16 +190,62 @@ async def analyze_screenshot(image: UploadFile = File(...)):
     try:
         import io
         import pytesseract
-        from PIL import Image
+        from PIL import Image, ImageOps
+
+        # Validate the upload before sending it to OCR.
+        if not image.filename:
+            raise HTTPException(400, "Please select a screenshot first.")
+
+        content_type = (image.content_type or "").lower()
+        allowed_types = {"image/png", "image/jpeg", "image/jpg"}
+        if content_type and content_type not in allowed_types:
+            raise HTTPException(400, "Please select a PNG or JPG screenshot.")
 
         data = await image.read()
-        extracted_text = pytesseract.image_to_string(Image.open(io.BytesIO(data))).strip()
+        if not data:
+            raise HTTPException(400, "The selected screenshot is empty.")
+        if len(data) > 10 * 1024 * 1024:
+            raise HTTPException(400, "Screenshot is too large. Please use an image below 10 MB.")
+
+        # Configure Tesseract automatically when running on a typical Windows install.
+        tesseract_cmd = os.getenv("TESSERACT_CMD", "").strip()
+        if tesseract_cmd:
+            pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+        elif os.name == "nt":
+            for candidate in (
+                r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+                r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+            ):
+                if Path(candidate).exists():
+                    pytesseract.pytesseract.tesseract_cmd = candidate
+                    break
+
+        try:
+            with Image.open(io.BytesIO(data)) as opened:
+                # Verify that the bytes really represent a supported image.
+                opened.verify()
+
+            with Image.open(io.BytesIO(data)) as opened:
+                image_for_ocr = ImageOps.exif_transpose(opened).convert("RGB")
+                extracted_text = pytesseract.image_to_string(image_for_ocr).strip()
+        except pytesseract.TesseractNotFoundError:
+            raise HTTPException(
+                500,
+                "OCR is not available. Install Tesseract OCR and restart the application."
+            )
+        except Exception as exc:
+            raise HTTPException(400, f"The screenshot could not be read: {exc}")
+
         if not extracted_text:
-            raise HTTPException(400, "No readable text was found in the screenshot.")
+            raise HTTPException(
+                400,
+                "No readable text was found in the screenshot. Please use a clearer PNG or JPG image."
+            )
 
         result = _load_sms().predict(extracted_text)
         response = _build_result(result["prediction"], result["probabilities"], "screenshot", extracted_text)
         response["technical"]["ocr_text"] = extracted_text
+        response["technical"]["filename"] = image.filename
         response["note"] = "Screenshot text was extracted with OCR and analyzed by the trained SMS model."
         return response
     except HTTPException:
