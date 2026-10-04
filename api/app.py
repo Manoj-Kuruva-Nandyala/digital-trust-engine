@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -27,16 +28,22 @@ class AnalyzeRequest(BaseModel):
 def _load_sms():
     global _sms_model
     if _sms_model is None:
+        print("[Trust Engine] Loading SMS DistilBERT model...", flush=True)
+        started = time.time()
         from src.sms_model import SMSModel
         _sms_model = SMSModel(str(SMS_MODEL_PATH))
+        print(f"[Trust Engine] SMS model loaded in {time.time()-started:.1f}s", flush=True)
     return _sms_model
 
 
 def _load_email():
     global _email_model
     if _email_model is None:
+        print("[Trust Engine] Loading Email DistilBERT model...", flush=True)
+        started = time.time()
         from src.email_model import EmailModel
         _email_model = EmailModel(str(EMAIL_MODEL_PATH))
+        print(f"[Trust Engine] Email model loaded in {time.time()-started:.1f}s", flush=True)
     return _email_model
 
 
@@ -140,7 +147,9 @@ def analyze(request: AnalyzeRequest):
         if not request.text.strip():
             raise HTTPException(400, "Please enter a message.")
         try:
+            started = time.time()
             result = _load_sms().predict(request.text)
+            print(f"[Trust Engine] SMS inference completed in {time.time()-started:.1f}s", flush=True)
             return _build_result(result["prediction"], result["probabilities"], "sms", request.text)
         except Exception as exc:
             raise HTTPException(500, f"SMS model could not be loaded or run: {exc}")
@@ -149,7 +158,9 @@ def analyze(request: AnalyzeRequest):
         if not request.text.strip():
             raise HTTPException(400, "Please enter an email.")
         try:
+            started = time.time()
             result = _load_email().predict(body=request.text)
+            print(f"[Trust Engine] Email inference completed in {time.time()-started:.1f}s", flush=True)
             return _build_result(result["prediction"], result["probabilities"], "email", request.text)
         except Exception as exc:
             raise HTTPException(500, f"Email model could not be loaded or run: {exc}")
