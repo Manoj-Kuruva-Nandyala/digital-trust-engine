@@ -12,6 +12,20 @@ ROOT = Path(__file__).resolve().parents[1]
 app = FastAPI(title="AI Digital Trust Engine")
 app.mount("/static", StaticFiles(directory=ROOT / "web"), name="static")
 
+@app.on_event("startup")
+def preload_models():
+    """Load available local models at startup so the first demo click is fast."""
+    if SMS_MODEL_PATH.exists():
+        try:
+            _load_sms()
+        except Exception as exc:
+            print(f"[Trust Engine] SMS model preload failed: {exc}", flush=True)
+    if EMAIL_MODEL_PATH.exists():
+        try:
+            _load_email()
+        except Exception as exc:
+            print(f"[Trust Engine] Email model preload failed: {exc}", flush=True)
+
 SMS_MODEL_PATH = Path(os.getenv("DIGITAL_TRUST_SMS_MODEL_PATH", ROOT / "models" / "distilbert_sms_model"))
 EMAIL_MODEL_PATH = Path(os.getenv("DIGITAL_TRUST_EMAIL_MODEL_PATH", ROOT / "models" / "distilbert_email_model"))
 
